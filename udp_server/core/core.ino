@@ -65,13 +65,14 @@ bool addMachine(Address address){
       for(int i =0;i<s;i++){ 
         if(addresses[i].isNull()){
           addresses[i] = address;
-          break;
+          Serial.println("Added succesfully."); 
+          return true;
         }
         if(i>=s-1){
-           Serial.println("No se pueden añadir más máquinas, el sistema está completo.");
+           Serial.println("It can't be added more machines, no slots are available.");
         }
       }
-      Serial.println("Added succesfully."); 
+      return false;
 }
 
 void loop() {
@@ -81,20 +82,20 @@ void loop() {
     r.trim();
     r.toLowerCase();
     
-    if(r=="a"){
+    if(r.equalsIgnoreCase("a")){
       addMachine(message.address);
     }
-    if(r=="b"){
+    if(r.equalsIgnoreCase("b")){
       //removeMachine(message.address);
     }
-    if(r=="c"){
+    if(r.equalsIgnoreCase("c")){
       showCurrentMachines();
     }
   }
 
   sendResponse();
 
-  delay(10);
+  delay(100);
 }
 
 void sendResponse(){
@@ -118,25 +119,18 @@ void showCurrentMachines(){
 
 UDPMessage readUDPMessage(){
   // if there's data available, read a packet
-  char packetBuffer[UDP_TX_PACKET_MAX_SIZE];//Clear buffer
+  char packetBuffer[UDP_TX_PACKET_MAX_SIZE] = {NULL};//Clear buffer
   int packetSize = Udp.parsePacket();
   IPAddress remote_ip;
   UDPMessage message;
   unsigned int remote_port = 0;
-  if (packetSize) {
+  if (packetSize>0) {
     remote_ip = Udp.remoteIP();
-    remote_port = Udp.remotePort();
-  
-    Serial.println("Received packet of size " + (String) packetSize + " bytes");
-    Serial.println("From " + stringFromIP(remote_ip) + ", port " + (String)remote_port);
-      
-    Udp.read(packetBuffer, UDP_TX_PACKET_MAX_SIZE);
-      
-    Serial.println("Contents:");
-    Serial.println(packetBuffer);
-    Serial.println();
-
+    remote_port = Udp.remotePort();  
+    Udp.read(packetBuffer, packetSize);
+    
     message = (UDPMessage){packetBuffer, Address(remote_ip, remote_port)};
+    Serial.println("Message[" + message.data + "]" + " Address[" + stringFromIP(message.address.ip)+ ":" +((String) message.address.port) + "] Size[" + ((String) packetSize) + "]");
   }
   return message;
 }

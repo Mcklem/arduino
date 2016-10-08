@@ -61,7 +61,7 @@ void initializeUDP(){
 bool addMachine(Address address){
   unsigned int s = sizeof(addresses)/8;
       Serial.println("Hay un espacio máximo para " + (String)s + " máquinas.");
-       
+      
       for(int i =0;i<s;i++){ 
         if(addresses[i].isNull()){
           addresses[i] = address;
@@ -82,13 +82,13 @@ void loop() {
     r.trim();
     r.toLowerCase();
     
-    if(r.equalsIgnoreCase("a")){
+    if(r.equalsIgnoreCase("add")){
       addMachine(message.address);
     }
-    if(r.equalsIgnoreCase("b")){
-      //removeMachine(message.address);
+    if(r.equalsIgnoreCase("remove")){
+//      removeMachine(message.address);
     }
-    if(r.equalsIgnoreCase("c")){
+    if(r.equalsIgnoreCase("show")){
       showCurrentMachines();
     }
   }
@@ -159,16 +159,17 @@ String stringFromIP(IPAddress remote){
    return s;
 }
 
-String *split(String data){
+String *split(String data, char separator){
   int s = 0;
+  //Get number of elements
   for(int i = 0;i<sizeof(data);i++){
-    if((int)data[i]==32) s++;
+    if((int)data[i]==(int)separator) s++;
   }
   String r[s];
   int rindex = 0;
   for(int i = 0;i<sizeof(data);i++){
     r[rindex] = i + r[rindex] + data[i];
-    if((int)data[i]==32)rindex++;   
+    if((int)data[i]==(int)separator)rindex++;   
   }
   return r;
 }

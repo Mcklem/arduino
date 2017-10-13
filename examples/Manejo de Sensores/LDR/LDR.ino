@@ -1,5 +1,5 @@
 int sensorPin = A0; // select the input pin for ldr
-int ledPin = 3;
+int ledPin = 13;
 
 int sensorValue = 0; // variable to store the value coming from the sensor
 
@@ -14,7 +14,7 @@ void loop() {
   Serial.println(sensorValue); //prints the values coming from the sensor on the screen
   delay(100);
 
-  if(sensorValue<=300){
+  if(sensorValue>1000){
     digitalWrite(ledPin, HIGH);
   }
   else{

@@ -8,8 +8,8 @@ class RotaryEncoder
   public:
 	  RotaryEncoder(int CLK, int DT);
     RotaryEncoder(int CLK, int DT, int SW);
-    RotationVariation GetRotationVariation();
-	  bool IsPressed();
+    RotationVariation getRotationVariation();
+	  bool isPressed();
   private:
     int _pinA = 0;
     int _pinB = 0;

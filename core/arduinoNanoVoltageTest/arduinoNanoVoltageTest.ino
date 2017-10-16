@@ -43,7 +43,7 @@ if(micros()>=lastMicros){
 
 void UpdateSensor() {
 
-  RotationVariation variation = rotaryEncoder.GetRotationVariation();
+  RotationVariation variation = rotaryEncoder.getRotationVariation();
   if(variation != NONE){
         Serial.print ("Rotated: ");
       if (variation == CLOCKWISE) {
@@ -57,7 +57,7 @@ void UpdateSensor() {
       Serial.println(encoderPositionCount);
   }
 
-  if(rotaryEncoder.IsPressed()) Serial.print("Pressed");
+  if(rotaryEncoder.isPressed()) Serial.print("Pressed");
 }
 
 

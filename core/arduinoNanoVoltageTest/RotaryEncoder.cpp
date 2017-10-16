@@ -24,11 +24,11 @@ RotaryEncoder::RotaryEncoder(int CLK, int DT, int SW)
     _ALastValue = digitalRead(_pinA);
 }
 
-bool RotaryEncoder::IsPressed(){
+bool RotaryEncoder::isPressed(){
   return digitalRead(_pinSW)==LOW;
 }
 
-RotationVariation RotaryEncoder::GetRotationVariation()
+RotationVariation RotaryEncoder::getRotationVariation()
 {
   RotationVariation variation = NONE;
   int aValue = digitalRead(_pinA);

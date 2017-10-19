@@ -14,35 +14,44 @@ void setup() {
   Serial.print(DEVICE_TYPE);
   Serial.println();
   
-  Wire.begin(8);                // join i2c bus with address #8
+  Wire.begin(42);                // join i2c bus with address #8
   Wire.onRequest(requestEvent); // register event
+  Wire.onReceive(receiveEvent); // register event
 }
 
 void loop(){
   delay(100);
 }
 
+String receivedId = "";
+//Receive request id
+void receiveEvent(int howMany){
+  Serial.print("RECEIVED ");
+  Serial.print(howMany);
+  Serial.print(" ");
+  receivedId = WireControl::readWireMessage();
+  Serial.print(receivedId);
+  Serial.println();
+}
+
 void requestEvent() {
   
-  StaticJsonBuffer<200> jsonBuffer;
+  /*StaticJsonBuffer<200> jsonBuffer;
   JsonObject& root = jsonBuffer.createObject();
 
   root[F("id")] = DEVICE_ID;
   root[F("type")] = DEVICE_TYPE;
   JsonObject& data = root.createNestedObject(F("data"));
-  data[F("time")] = millis()/1000;
-  String jsonStr;
-  root.printTo(jsonStr);
+  data[F("time")] = millis()/1000;*/
+  //String jsonStr = "";
+  //root.printTo(jsonStr);
   
-  Serial.print("REQUESTED " );
-  Serial.println(jsonStr);
-
-  byte bytes[150];
-  jsonStr.getBytes(bytes, 150);
-  for(int i = 0; i<150;i++){
-    Serial.print((char)bytes);
-  }
-  Serial.println();
-  Wire.write(bytes, 150);
+  Serial.println("REQUESTED");
+  String message = receivedId;
+  message.concat((char)4);//add EOT keeping message integrity
+  byte bytes[message.length()];
+  message.getBytes(bytes, message.length());
+  Wire.write(bytes, sizeof(bytes));
+  
 }
 

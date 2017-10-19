@@ -1,5 +1,7 @@
 #include <ArduinoJson.h>
 #include <Ethernet.h>
+#include <Wire.h>
+#include "./WireControl.h"
 
 byte mac[] = { 0x00, 0xAA, 0xBB, 0xCC, 0xDE, 0x02 };
 
@@ -12,6 +14,7 @@ String HTTP_request = "";
 
 void setup() {
   Serial.begin(9600);
+  Wire.begin(); 
   initializeEthernet();
 }
 
@@ -81,16 +84,25 @@ void refreshIP(){
 void writeHTTP(EthernetClient client){
 
     unsigned int timeSinceStart = millis()/1000;
- 
-    Wire.requestFrom(42, 150);//request wire data
+
+  //prepare data
+    String a = "50";
+    byte b[sizeof(a)];
+    byte bytes[32];
+    a.getBytes(b,sizeof(a));
+
+    //send
+    requestData(42,b,bytes);
+
+    //receive  
     String message = "";
-    while (Wire.available()> 0) { // loop through all but the last
-      byte c = Wire.read();
+    for(int i = 0;i<32;i++){
+      char c = (char) bytes[i];
+      message.concat(c);
       Serial.print(c);
-      message.concat((char)c); // receive byte as a character
     }
-    Serial.println(message);
-    //client.println(WireControl::readWireMessage());
+    Serial.println();
+    
     client.println("<head></head>"); 
     client.println("<body>"); 
     client.println(message);
@@ -101,6 +113,18 @@ bool getHTTPRequest(String request){
     bool r = HTTP_request.indexOf(request) > 0;
     if(r)HTTP_request = "";
     return r;
+}
+
+//Cant be sent or received more than 32 bytes in a single call
+void requestData(int device , byte dataToBeSent[], byte receivedData[]){
+    Wire.beginTransmission(device);
+    Wire.write(dataToBeSent, sizeof(dataToBeSent));
+    Wire.endTransmission();
+    Wire.requestFrom(device, sizeof(receivedData));//request wire data
+    short i = 0;
+    while(Wire.available()>0){
+      receivedData[i++] = Wire.read();
+    }
 }
 
 

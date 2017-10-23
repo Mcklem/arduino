@@ -3,7 +3,7 @@ int bluepin = 10; // select the pin for the blue LED
 int greenpin = 9; // select the pin for the green LED
 int val=0;
 void setup () {
-  pinMode (redpin, OUTPUT);
+  pinMode(redpin, OUTPUT);
   pinMode (bluepin, OUTPUT);
   pinMode (greenpin, OUTPUT);
   Serial.begin (9600);

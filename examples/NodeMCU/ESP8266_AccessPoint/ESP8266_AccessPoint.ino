@@ -35,17 +35,27 @@ void setup() {
     WiFi.softAP(ssid, password);
 
     IPAddress apip = WiFi.softAPIP();
-    Serial.print("visit: \n");
+    Serial.print("Address: ");
     Serial.println(apip);
+
+    server.onNotFound(handleNotFound);
     server.on("/", handleRoot);
     server.on("/LEDOn", handleLedOn);
     server.on("/LEDOff", handleLedOff);
     server.on("/Hello", handleHello);
     server.on("/Time", handleTime);
+    server.on("/StationNumber", handleStationNum);
     server.begin();
     Serial.println("HTTP server beginned");
     pinMode(led_pin, OUTPUT);
     digitalWrite(led_pin, stateLED);
+}
+
+void handleNotFound(){
+  String htmlRes = HtmlHtml;
+  htmlRes += "<h1> Oops, 404 page not found. </h1>";
+  htmlRes += HtmlHtmlClose;
+  server.send(200, "text/html", htmlRes);
 }
 
 void handleRoot() {
@@ -70,10 +80,16 @@ void handleHello() {
 }
 
 void handleTime() {
-  Serial.println("Hello darkness my old friend");
   String htmlRes = HtmlHtml;
   int t = millis()/1000;
   htmlRes += String(t)  + "s";
+  htmlRes += HtmlHtmlClose;
+  server.send(200, "text/html", htmlRes);
+}
+
+void handleStationNum(){
+  String htmlRes = HtmlHtml;
+  htmlRes += String(WiFi.softAPgetStationNum())  + " devices";
   htmlRes += HtmlHtmlClose;
   server.send(200, "text/html", htmlRes);
 }

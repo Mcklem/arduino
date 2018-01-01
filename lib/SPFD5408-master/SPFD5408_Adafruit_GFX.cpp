@@ -583,13 +583,12 @@ void Adafruit_GFX_Button::initButton(Adafruit_GFX *gfx,
  void Adafruit_GFX_Button::drawButton(boolean inverted) {
    uint16_t fill, outline, text;
 
+   outline = _outlinecolor;
    if (! inverted) {
      fill = _fillcolor;
-     outline = _outlinecolor;
      text = _textcolor;
    } else {
      fill =  _textcolor;
-     outline = _outlinecolor;
      text = _fillcolor;
    }
 

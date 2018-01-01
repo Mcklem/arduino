@@ -40,8 +40,6 @@
 
 Adafruit_TFTLCD tft(LCD_CS, LCD_CD, LCD_WR, LCD_RD, LCD_RESET);
 
-String data = "";
-
 void setup(void) {
   
   Serial.begin(9600);
@@ -60,13 +58,19 @@ void setup(void) {
 }
 
 void loop() {
-  tft.setCursor(0, 0);
-  tft.print(data);
-  delay(200);
+  tft.setCursor(0,0);
+  tft.print("A5: ");
+  tft.print(String(analogRead(A5)));
+  tft.println();
+  tft.print("A6: ");
+  tft.print(String(analogRead(A6)));
+  tft.println();
+  delay(10);
+  tft.fillScreen(BLACK);
 }
 
 void serialEvent() {
   if(Serial.available()>0){
-    data += Serial.readString();
+    tft.println(Serial.readString());
   }
 }

@@ -8,6 +8,9 @@
 #include <WiFiClient.h> 
 #include <ESP8266WebServer.h>
 
+const char* www_username = "admin";
+const char* www_password = "admin";
+
 const char *ssid = "IM_NOT_AN_ACCESS_POINT";
 const char *password = "12345678";
 int stateLED = LOW;
@@ -39,16 +42,55 @@ void setup() {
     Serial.println(apip);
 
     server.onNotFound(handleNotFound);
-    server.on("/", handleRoot);
+    //server.on("/", handleRoot);
+    server.on("/", [](){
+    if(!server.authenticate(www_username, www_password))
+      return server.requestAuthentication();
+      handleRoot();
+    });
     server.on("/LEDOn", handleLedOn);
     server.on("/LEDOff", handleLedOff);
     server.on("/Hello", handleHello);
     server.on("/Time", handleTime);
     server.on("/StationNumber", handleStationNum);
+    server.on("/Info", handleWifiInfo);
+    server.on("/DeviceInfo", handleDeviceInfo);
     server.begin();
     Serial.println("HTTP server beginned");
     pinMode(led_pin, OUTPUT);
     digitalWrite(led_pin, stateLED);
+}
+
+void handleDeviceInfo(){
+  Serial.println(ESP.getBootVersion());
+  Serial.println(ESP.getBootMode());
+  Serial.println(ESP.getCpuFreqMHz());
+  Serial.println(ESP.getSketchSize());
+  Serial.println(ESP.getFreeSketchSpace());
+  Serial.println(ESP.getFreeHeap());
+  Serial.println(ESP.getChipId());
+  Serial.println(ESP.getFlashChipId());
+  Serial.println(ESP.getFlashChipSize());
+  Serial.println(ESP.getCycleCount());
+  Serial.println(ESP.getVcc());
+  /*if (WiFi.status() == WL_CONNECTED)
+  {
+    char buffer [18];
+    uint8_t macAddr[6];
+    WiFi.macAddress(macAddr);
+    sprintf(buffer, "%02x:%02x:%02x:%02x:%02x:%02x", macAddr[0], macAddr[1], macAddr[2], macAddr[3], macAddr[4], macAddr[5]);
+    htmlRes += buffer;
+  }*/
+  server.send(200, "text/html", "");
+}
+
+void handleWifiInfo(){
+  String htmlRes = "";
+  //WiFi.printDiag(htmlRes);
+  htmlRes += WiFi.localIP();
+  htmlRes += WiFi.getMode();
+  htmlRes = HtmlHtml + htmlRes + HtmlHtmlClose;
+  server.send(200, "text/html", htmlRes);
 }
 
 void handleNotFound(){
@@ -112,5 +154,5 @@ void response(){
 
 void loop() {
     server.handleClient();
-    delay(10);
+    delay(100);
 }
